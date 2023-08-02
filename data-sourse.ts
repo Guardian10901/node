@@ -11,6 +11,7 @@ const dataSourse = new DataSource({
     database: "training",
     entities: [Employee],
     logging: true,
+    synchronize:true,
     namingStrategy: new SnakeNamingStrategy()
 })
 

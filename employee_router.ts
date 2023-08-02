@@ -3,27 +3,21 @@ import client from "pg"
 import { Employee } from "./employee";
 
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
-import { DataSource } from "typeorm";
+import { DataSource, Like } from "typeorm";
 import dataSourse from "./data-sourse";
 const employeeRouter = express.Router();
+
 let count = 2;
-const employee: Employee[] = [{
-    id: 1,
-    name: "veena",
-    email: "veena@gmail.com",
-    createdAt: new Date(),
-    updatedAt: new Date()
-}, {
-    id: 2,
-    name: "vidya",
-    email: "vidya@gmail.com",
-    createdAt: new Date(),
-    updatedAt: new Date()
-}]
+
 employeeRouter.get('/',async (req, res) => {
     console.log(req.url);
+    const nameFilter = req.query.name;
     const employeeRepository = dataSourse.getRepository(Employee);
-    const employee = await employeeRepository.find();
+    const employee = await employeeRepository.find({
+        where:{
+            name:Like(nameFilter as string +"%")
+        }}
+    );
     res.status(200).send(employee);
 })
 employeeRouter.get('/:id', async (req, res) => {
@@ -71,7 +65,7 @@ employeeRouter.delete('/:id', async (req, res) => {
     const employee = await employeeRepository.findOneBy({
         id: Number(req.params.id),
     });
-    await employeeRepository.remove(employee);
+    await employeeRepository.softRemove(employee);
     res.status(204).send();
 })
 export default employeeRouter;
