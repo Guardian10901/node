@@ -3,7 +3,7 @@ import client from "pg"
 import { Employee } from "./employee";
 
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
-import { DataSource, Like } from "typeorm";
+import { DataSource, Like ,FindOptionsWhere} from "typeorm";
 import dataSourse from "./data-sourse";
 const employeeRouter = express.Router();
 
@@ -12,11 +12,18 @@ let count = 2;
 employeeRouter.get('/',async (req, res) => {
     console.log(req.url);
     const nameFilter = req.query.name;
+    const filters : FindOptionsWhere<Employee> ={};
+    if(nameFilter){
+        filters.name =Like(`${nameFilter}`)
+    }
+
     const employeeRepository = dataSourse.getRepository(Employee);
     const employee = await employeeRepository.find({
-        where:{
-            name:Like(nameFilter as string +"%")
-        }}
+        // where:{
+        //     name:Like(nameFilter as string +"%"),
+        //     email:Like("%gmail.com")
+        // }}
+        where:filters}
     );
     res.status(200).send(employee);
 })
@@ -34,11 +41,9 @@ employeeRouter.get('/:id', async (req, res) => {
 employeeRouter.post('/', async(req, res) => {
     console.log(req.url);
     const newemployee = new Employee();
-    newemployee.id = ++count;
+    
     newemployee.name = req.body.name;
     newemployee.email = req.body.email;
-    newemployee.createdAt = new Date();
-    newemployee.updatedAt = new Date();
 
     const employeeRepository = dataSourse.getRepository(Employee);
     const employee = await employeeRepository.save(newemployee);
