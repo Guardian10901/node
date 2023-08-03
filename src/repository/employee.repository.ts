@@ -14,9 +14,11 @@ class EmployeeRepository {
         }
         findOneBy(id :number):Promise<Employee>{
             
-            return this.employeerepository.findOneBy(
-                {
-                    id:id
+            return this.employeerepository.findOne(
+                { where:{id:id},
+                  relations:{
+                    address:true
+                }
                 }
             );
         }
@@ -25,14 +27,11 @@ class EmployeeRepository {
             
         }
         async update(id:number){
-            
+
 
         }
-        async delete(id :number){
-            const employee = await this.employeerepository.findOneBy(
-                {
-                id:id
-            })
+        async delete(employee:Employee){
+           
             return this.employeerepository.softRemove(employee);
 
 

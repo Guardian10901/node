@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import Address from "./address.entity";
 
 
 @Entity('employees')
@@ -7,6 +8,8 @@ class Employee {
     id: number;
     @Column()
     name: string;
+    @Column({nullable:true})
+    age:number;
     @Column()
     email: string;
     @CreateDateColumn()
@@ -15,5 +18,8 @@ class Employee {
     updatedAt: Date;
     @DeleteDateColumn()
     deletedAt:Date;
+    @OneToOne(()=>Address,(address)=>address.employee,{cascade:true})
+    address :Address;
+
 }
 export { Employee };
