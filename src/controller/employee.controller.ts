@@ -10,7 +10,7 @@ class EmployeeController {
         this.router.get("/", this.getAllEmployees);
         this.router.get("/:id", this.getEmployeeId);
         this.router.post("/", this.createEmployee);
-        this.router.put("/", this.updateEmployee)
+        this.router.put("/:id", this.updateEmployee);
         this.router.delete("/:id", this.deleteEmployee);
     }
 
@@ -52,9 +52,10 @@ class EmployeeController {
 
     }
     updateEmployee = async (req: express.Request, res: express.Response) => {
-        // const employeeId: number = Number(req.params.id);
-        // const employee = await this.employeeService.updateEmployee(req.body.name,req.body.email,req.body.address);
-        // res.status(200).send(employee);
+        const employeeId: number = Number(req.params.id);
+        const {name,email,address} =req.body;
+        const employee = await this.employeeService.updateEmployee(employeeId,name,email,address)
+        res.status(200).send(employee);
     }
 }
 export default EmployeeController;

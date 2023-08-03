@@ -26,7 +26,8 @@ class EmployeeRepository {
             return this.employeerepository.save(newemployee);
             
         }
-        async update(id:number){
+        async update(employee:Employee){
+            return this.employeerepository.update({id:employee.id},employee);
 
 
         }
@@ -36,6 +37,11 @@ class EmployeeRepository {
 
 
         }
+        // findAddress(employee:Employee){
+        //     return this.employeerepository.findOne({
+        //         employee:employee
+        //     })
+        // }
 
     
     } 
