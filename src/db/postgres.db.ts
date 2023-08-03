@@ -1,8 +1,9 @@
 import { DataSource } from "typeorm";
-import { Employee } from "./employee";
-import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 
-const dataSourse = new DataSource({
+import { SnakeNamingStrategy } from "typeorm-naming-strategies";
+import { Employee } from "../entity/employee.entity";
+
+const dataSource = new DataSource({
     type: "postgres",
     host: "localhost",
     port: 8765,
@@ -11,8 +12,8 @@ const dataSourse = new DataSource({
     database: "training",
     entities: [Employee],
     logging: true,
-    synchronize:true,
+    // synchronize:true,
     namingStrategy: new SnakeNamingStrategy()
 })
 
-export default dataSourse;
+export default dataSource;

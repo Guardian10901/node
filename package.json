@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start-server": "npx tsc && node dist/app.js",
+    "start-server": "npx tsc && node dist/src/app.js",
     "build": "rm -rf dist && npx tsc"
   },
   "keywords": [],
