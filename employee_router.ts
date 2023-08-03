@@ -12,19 +12,32 @@ let count = 2;
 employeeRouter.get('/',async (req, res) => {
     console.log(req.url);
     const nameFilter = req.query.name;
-    const filters : FindOptionsWhere<Employee> ={};
-    if(nameFilter){
-        filters.name =Like(`${nameFilter}`)
-    }
-
+    const emailFilter = req.query.email;
     const employeeRepository = dataSourse.getRepository(Employee);
-    const employee = await employeeRepository.find({
-        // where:{
-        //     name:Like(nameFilter as string +"%"),
-        //     email:Like("%gmail.com")
-        // }}
-        where:filters}
-    );
+    const queryBuilder = employeeRepository.createQueryBuilder();
+    if(nameFilter){
+        queryBuilder.andWhere("name LIKE :somename",{somename:`${nameFilter}%`});
+        
+    }
+    if (emailFilter) {
+        queryBuilder.andWhere("email LIKE :email",{email:`%${emailFilter}%`});
+    }
+    const employee = await queryBuilder.getMany();
+
+    // const filters : FindOptionsWhere<Employee> ={};
+    // if(nameFilter){
+    //     filters.name =Like(`${nameFilter}`)
+    // }
+
+    // 
+    // const employee = await employeeRepository.find({
+    //     // where:{
+    //     //     name:Like(nameFilter as string +"%"),
+    //     //     email:Like("%gmail.com")
+    //     // }}
+    //     where:filters}
+    // );
+
     res.status(200).send(employee);
 })
 employeeRouter.get('/:id', async (req, res) => {
