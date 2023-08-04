@@ -1,7 +1,10 @@
+import CreateAddressDto from "../dto/create-address.dto";
 import Address from "../entity/address.entity";
 import { Employee } from "../entity/employee.entity";
 import HttpException from "../exception/http.exception";
 import EmployeeRepository from "../repository/employee.repository";
+import bcrypt from "bcrypt"
+import jsonwebtoken from "jsonwebtoken"
 
 class EmployeeService {
 
@@ -19,26 +22,26 @@ class EmployeeService {
         }
         return employee;
     }
-    createEmployee = async (name: string, email: string, address: Address): Promise<Employee> => {
+    createEmployee = async (name: string, email: string, address: CreateAddressDto,age:number,password:string): Promise<Employee> => {
         const newemployee = new Employee();
         newemployee.name = name;
         newemployee.email = email;
-
         const newAddress = new Address();
         newAddress.line1 = address.line1;
         newAddress.pincode = address.pincode;
-        newemployee.address = newAddress
+        newemployee.address = newAddress//relation of foreign key
+        newemployee.age=age;
+        newemployee.password= await bcrypt.hash(password,10)
         const employee = await this.employeeRepository.createEmployee(newemployee);
+       
         return employee;
     }
     updateEmployee = async (id: number, name: string, email: string, address: Address): Promise<Employee> => {
         const employee = await this.getEmployeeId(id);
         employee.name = name;
         employee.email = email;
-        employee.address=address;
-        // employee.address = this.employeeRepository.findOneBy({
-
-        // })
+        employee.address.line1=address.line1;
+        employee.address.pincode=address.pincode;
         console.log(employee)
         await this.employeeRepository.update(employee)
         return employee
@@ -48,6 +51,26 @@ class EmployeeService {
     deleteEmployee = async (id: number): Promise<void> => {
         const employee = await this.getEmployeeId(id);
         await this.employeeRepository.delete(employee);
+
+    }
+    loginEmployee = async (email:string,password:string)=>{
+        const employee = await this.employeeRepository.findByEmail(email);
+        if(!employee){
+            throw new HttpException(401,"Employee not found");
+        }
+        const result =await bcrypt.compare(password,employee.password);
+        if(!result)
+        {
+            throw new HttpException(401,"Incorrect  Username or Password")
+        }
+        const payload={
+            name:employee.name,
+            email:employee.email
+
+        }
+        const token = jsonwebtoken.sign(payload,"ABCDX",{
+            expiresIn:"1h"});
+        return(token)
 
     }
 

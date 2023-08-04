@@ -27,7 +27,7 @@ class EmployeeRepository {
             
         }
         async update(employee:Employee){
-            return this.employeerepository.update({id:employee.id},employee);
+            return this.employeerepository.save(employee);
 
 
         }
@@ -37,11 +37,14 @@ class EmployeeRepository {
 
 
         }
-        // findAddress(employee:Employee){
-        //     return this.employeerepository.findOne({
-        //         employee:employee
-        //     })
-        // }
+        findByEmail(email:string):Promise<Employee>{
+            
+            return this.employeerepository.findOne({
+                where:{email}
+                }
+            );
+        }
+      
 
     
     } 
