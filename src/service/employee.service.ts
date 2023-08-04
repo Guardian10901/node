@@ -1,3 +1,4 @@
+import { Role } from "../../utils/role.enum";
 import CreateAddressDto from "../dto/create-address.dto";
 import Address from "../entity/address.entity";
 import { Employee } from "../entity/employee.entity";
@@ -22,7 +23,7 @@ class EmployeeService {
         }
         return employee;
     }
-    createEmployee = async (name: string, email: string, address: CreateAddressDto,age:number,password:string): Promise<Employee> => {
+    createEmployee = async (name: string, email: string, address: CreateAddressDto,age:number,password:string,role:Role): Promise<Employee> => {
         const newemployee = new Employee();
         newemployee.name = name;
         newemployee.email = email;
@@ -32,6 +33,7 @@ class EmployeeService {
         newemployee.address = newAddress//relation of foreign key
         newemployee.age=age;
         newemployee.password= await bcrypt.hash(password,10)
+        newemployee.role=role;
         const employee = await this.employeeRepository.createEmployee(newemployee);
        
         return employee;
@@ -65,7 +67,8 @@ class EmployeeService {
         }
         const payload={
             name:employee.name,
-            email:employee.email
+            email:employee.email,
+            role:employee.role
 
         }
         const token = jsonwebtoken.sign(payload,"ABCDX",{

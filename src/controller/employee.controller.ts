@@ -4,11 +4,13 @@ import { plainToClass, plainToInstance } from "class-transformer";
 import CreateEmployeeDto from "../dto/create-employee.dto";
 import { validate } from "class-validator";
 import ValidateException from "../exception/validate.exception";
+import authenticate from "../middleware/authenticate.middleware";
+import authorize from "../middleware/authorize.middleware";
 class EmployeeController {
     public router: express.Router;
     constructor(private employeeService: EmployeeService) {
         this.router = express.Router();
-        this.router.get("/", this.getAllEmployees);
+        this.router.get("/", authenticate,authorize,this.getAllEmployees);
         this.router.get("/:id", this.getEmployeeId);
         this.router.post("/", this.createEmployee);
         this.router.put("/:id", this.updateEmployee);
@@ -44,7 +46,7 @@ class EmployeeController {
 
             }
 
-            const employee = await this.employeeService.createEmployee(createEmployee.name, createEmployee.email, createEmployee.address,createEmployee.age,createEmployee.password)
+            const employee = await this.employeeService.createEmployee(createEmployee.name, createEmployee.email, createEmployee.address,createEmployee.age,createEmployee.password,createEmployee.role)
             res.status(201).send(employee);
         } catch (error) {
             next(error);

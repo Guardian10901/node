@@ -12,7 +12,7 @@ class ValidateException extends Error {
     const err: Object  ={}
     error.forEach(element => {
       
-      err[ element.property] = element.constraints;
+      err[ element.property] = element.constraints.values;
       
     });
     console.log(err);
