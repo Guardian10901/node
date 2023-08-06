@@ -26,21 +26,21 @@ class EmployeeRepository {
             return this.employeerepository.save(newemployee);
             
         }
-        async update(employee:Employee){
+        update(employee:Employee){
             return this.employeerepository.save(employee);
 
 
         }
-        async delete(employee:Employee){
+        delete(employee:Employee){
            
             return this.employeerepository.softRemove(employee);
 
 
         }
-        findByEmail(email:string):Promise<Employee>{
+        findByUsername(username:string):Promise<Employee>{
             
             return this.employeerepository.findOne({
-                where:{email}
+                where:{username}
                 }
             );
         }

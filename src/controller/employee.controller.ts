@@ -6,15 +6,17 @@ import { validate } from "class-validator";
 import ValidateException from "../exception/validate.exception";
 import authenticate from "../middleware/authenticate.middleware";
 import authorize from "../middleware/authorize.middleware";
+import { Role } from "../../utils/role.enum";
+import employeeService from "../service/employee.service";
 class EmployeeController {
     public router: express.Router;
     constructor(private employeeService: EmployeeService) {
         this.router = express.Router();
-        this.router.get("/", authenticate,authorize,this.getAllEmployees);
-        this.router.get("/:id", this.getEmployeeId);
+        this.router.get("/", this.getAllEmployees);
+        this.router.get("/:id",this.getEmployeeId);
         this.router.post("/", this.createEmployee);
         this.router.put("/:id", this.updateEmployee);
-        this.router.delete("/:id", this.deleteEmployee);
+        this.router.delete("/:id",this.deleteEmployee);
         this.router.post("/login",this.loginEmployee);
 
     }
@@ -36,6 +38,7 @@ class EmployeeController {
     }
     createEmployee = async (req: express.Request, res: express.Response, next: NextFunction) => {
         try {
+            console.log("ggg")         
             
             const createEmployee = plainToInstance(CreateEmployeeDto, req.body);
 
@@ -46,9 +49,10 @@ class EmployeeController {
 
             }
 
-            const employee = await this.employeeService.createEmployee(createEmployee.name, createEmployee.email, createEmployee.address,createEmployee.age,createEmployee.password,createEmployee.role)
+            const employee = await this.employeeService.createEmployee(createEmployee)
             res.status(201).send(employee);
         } catch (error) {
+           
             next(error);
         }
     }
@@ -74,7 +78,7 @@ class EmployeeController {
                 throw new ValidateException(404,"Vaildation error",errors);
 
             }
-            const employee = await this.employeeService.updateEmployee(employeeId, name, email, address)
+            const employee = await this.employeeService.updateEmployee(employeeId, updateEmployee)
             res.status(200).send(employee);
         }
         catch (error) {

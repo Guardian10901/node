@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv";
-dotenv.config({path:__dirname+'/.env'});
+dotenv.config({ path: __dirname + '/.env' });
 
 import "reflect-metadata";
 import express, { NextFunction, Request, Response } from "express";
@@ -10,12 +10,18 @@ import dataSourse from "./db/postgres.db";
 import employeeRouter from "./route/employee.route";
 import HttpException from "./exception/http.exception";
 import errorMiddleware from "./middleware/error.middleware";
-
+import departmentRouter from "./route/department.route";
+import { Role } from "../utils/role.enum";
 
 const server = express();
 server.use(express.json());
 server.use(loggerMiddleware);
-server.use('/employees', employeeRouter);
+server.use('/api/employees', employeeRouter);
+server.use("/api/department", departmentRouter);
+server.get('/api/roles/',(req:express.Request,res:express.Response)=>{
+    return res.status(200).json({data:Object.values(Role)});
+})
+
 server.use(errorMiddleware);
 
 (async () => {

@@ -15,6 +15,22 @@ describe("Employee Services tests", () => {
         employeeRepository = new EmployeeRepository(dataSourse.getRepository(Employee))
         employeeService = new EmployeeService(employeeRepository)
     });
+    describe("Test for getallEmployee",async()=>{
+        const mockedFunction = jest.fn();
+
+        when(mockedFunction).calledWith(1).mockResolvedValueOnce({
+            id: 1, name: "vidya", email: "vv@gmail.com", address: {
+                line1: "abc", pincode: "1236"
+            }, age: 25, password: "123654789", role: Role.Delevoper
+        });
+        employeeRepository.findOneBy = mockedFunction;
+        const employee = await employeeService.getEmployeeId(1);
+        expect(employee).toStrictEqual({
+            id: 1, name: "vidya", email: "vv@gmail.com", address: {
+                line1: "abc", pincode: "1236"
+            }, age: 25, password: "123654789", role: Role.Delevoper
+        });
+    })
     describe('Test for getEmployeeById', () => {
 
         test(' Test Employee  for Id', async () => {
