@@ -25,7 +25,7 @@ class CreateEmployeeDto{
     address:CreateAddressDto;
 
     @IsNotEmpty()
-    department:string;
+    departmentId:number;
 
 
     @IsNotEmpty()

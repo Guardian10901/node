@@ -34,6 +34,7 @@ class DepartmentService {
     deleteDepartment =async (id:number) => {
         const department = await this.getDepartmentId(id);
         await this.departmentRepository.deleteDepartment(department)
+        return department
        
         
     }

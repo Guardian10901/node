@@ -1,4 +1,6 @@
 import { DataSource } from "typeorm";
+import * as dotenv from "dotenv";
+dotenv.config({path: "dist/.env" });
 
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 import { Employee } from "../entity/employee.entity";
@@ -8,10 +10,10 @@ import Department from "../entity/department.entity";
 const dataSource = new DataSource({
     type: "postgres",
     host: process.env.POSTGRES_HOST,
-    port: 8765,
-    username: "postgres",
-    password: "postgres",
-    database: "training",
+    port: Number(process.env.PORT),
+    username: process.env.USER_NAME,
+    password: process.env.PASSWORD,
+    database: process.env.DATABASE,
     entities: [Employee,Address,Department],
     logging: true,
     migrations:["dist/src/db/migrations/*.js"],

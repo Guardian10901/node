@@ -10,10 +10,15 @@ import bcrypt from "bcrypt"
 import jsonwebtoken from "jsonwebtoken"
 import dataSource from "../db/postgres.db";
 import Department from "../entity/department.entity";
+import logger from "../../utils/log.winston";
+import * as dotenv from "dotenv";
+import DepartmentService from "./department.service";
+dotenv.config({path: "dist/.env" });
 
 class EmployeeService {
-
-    constructor(private employeeRepository: EmployeeRepository) {
+  
+   
+    constructor(private employeeRepository: EmployeeRepository, private departmentService: DepartmentService) {
 
     }
     getAllEmployees = async (): Promise<Employee[]> => {
@@ -33,9 +38,9 @@ class EmployeeService {
         newemployee.username = employeedto.username;
         newemployee.experience = employeedto.experience;
         newemployee.joiningDate = employeedto.joiningDate;
-        const departmentRepository= new DepartmentRepository(dataSource.getRepository(Department))
-        const department = departmentRepository.findOneBy(Number(employeedto.department));
-        newemployee.department = await department;
+        
+        const department = await this.departmentService.getDepartmentId((employeedto.departmentId));
+        newemployee.department = department;
      
         const newAddress = new Address();
         newAddress.address_line_1 = employeedto.address.address_line_1;
@@ -62,26 +67,28 @@ class EmployeeService {
         employee.address.state = updateEmployeedto.address.state;
         employee.address.country = updateEmployeedto.address.country;
         employee.address.pincode = updateEmployeedto.address.pincode;
-        console.log(employee)
+       
         await this.employeeRepository.update(employee)
         return employee
 
 
     }
-    deleteEmployee = async (id: number): Promise<void> => {
+    deleteEmployee = async (id: number): Promise<Employee> => {
         const employee = await this.getEmployeeId(id);
-        await this.employeeRepository.delete(employee);
+        await this.employeeRepository.delete(employee)
+        return employee;
 
     }
     loginEmployee = async (username: string, password: string) => {
         const employee = await this.employeeRepository.findByUsername(username);
         if (!employee) {
+            logger.error('Employee not found')
             throw new HttpException(401, "Employee not found");
         }
         
-        // const result = await bcrypt.compare(password, employee.password);
-        // if (!result) {
-        if(password!=employee.password){
+        const result = await bcrypt.compare(password, employee.password);
+        if (!result) {
+            logger.error('Incorrect  Username or Password')
             throw new HttpException(401, "Incorrect  Username or Password")
         }
         const payload = {
@@ -90,10 +97,10 @@ class EmployeeService {
             role: employee.role
 
         }
-        const token = jsonwebtoken.sign(payload, "ABCDX", {
-            expiresIn: "1h"
+        const token = jsonwebtoken.sign(payload, process.env.SECRET_KEY, {
+            expiresIn: "24h"
         });
-        return (token)
+        return {token,employee}
 
     }
 

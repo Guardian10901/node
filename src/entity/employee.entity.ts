@@ -23,6 +23,7 @@ class Employee extends AbstractEntity{
     @ManyToOne(()=>Department,(department)=>department.employees,{cascade:true})
     @JoinColumn({name:'departmentId'})
     department:Department
+
     @Column({default:Role.Delevoper})
     role:Role
    

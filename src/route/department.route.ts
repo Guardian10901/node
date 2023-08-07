@@ -9,4 +9,4 @@ const departmentServices = new DepartmentService(departmentRepository);
 const departmentController = new DepartmentController(departmentServices);
 const departmentRouter = departmentController.router;
 
-export default departmentRouter;
+export {departmentServices, departmentRouter};
