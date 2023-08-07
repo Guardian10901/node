@@ -8,7 +8,9 @@ class ValidateException extends Error {
       //this.status = status;
       this.errors = this.parseErrors(errors);
       console.log(this.errors);
-  }    parseErrors = (errors: ValidationError[]) => {
+  }    
+  
+  parseErrors = (errors: ValidationError[]) => {
       let errorObject = {};
       for (let e of errors) {
           if (e.children.length === 0) {

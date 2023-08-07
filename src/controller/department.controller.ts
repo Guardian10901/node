@@ -8,6 +8,7 @@ import ValidateException from "../exception/validate.exception";
 import authenticate from "../middleware/authenticate.middleware";
 import authorize from "../middleware/authorize.middleware";
 import { Role } from "../../utils/role.enum";
+import logger from "../../utils/log.winston";
 class DepartmentController {
     public router: express.Router
     constructor(private departmentService: DepartmentService) {
@@ -26,7 +27,8 @@ class DepartmentController {
     ) => {
         const startTime =Date.now();
         const department = await this.departmentService.getAllDepartments();
-        res.status(200).send({data:department,error:null})
+        logger.info("All Departments sucessfully fetched ")
+        res.status(200).send({data:department,error:null,message:"OK",meta:{lenght:department.length,took:Date.now()-startTime,total:department.length}})
 
     }
     getDepartmentId = async (
@@ -37,9 +39,11 @@ class DepartmentController {
         try {
             const departmentId: number = Number(req.params.id);
             const department = await this.departmentService.getDepartmentId(departmentId);
-            res.status(200).send(department);
+            logger.info( `Department ${departmentId} sucessfully fetched` )
+            res.status(200).send({data:department,error:null,message:"OK",meta:{length:1,took:Date.now()-startTime,total:1}});
         }
         catch (error) {
+            logger.error("Department fetch failed")
             next(error);
 
         }
@@ -60,8 +64,10 @@ class DepartmentController {
 
             }
             const department = await this.departmentService.createDepartment(createDepartment)
-            res.status(201).send(department);
+            logger.info("New Department created sucessfully ")
+            res.status(201).send({data:department,error:null,message:"OK",meta:{length:1,took:Date.now()-startTime,total:1}});
         } catch (error) {
+            logger.error("New department creation failed")
             next(error);
         }
     }
@@ -80,9 +86,11 @@ class DepartmentController {
 
             }
             const department = await this.departmentService.upadateDepartment(departmentId, updateDepartment)
-            res.status(200).send(department);
+            logger.info("Department sucessfully updated")
+            res.status(200).send({data:department,error:null,message:"OK",meta:{length:1,took:Date.now()-startTime,total:1}});
         }
         catch (error) {
+            logger.error("department updation failed")
             next(error)
         }
         }
@@ -95,8 +103,10 @@ class DepartmentController {
             try {
                 const departmentId :number =Number(req.body.id);
                 const department = await this.departmentService.deleteDepartment(departmentId);
-                res.status(204).send(department)
+                logger.info("Department sucessfully deleted ")
+                res.status(204).send({data:department,error:null,message:"OK",meta:{length:1,took:Date.now()-startTime,total:1}})
             } catch (error) {
+                logger.error("Department deletion failed")
                 next(error)
             }
     
