@@ -60,7 +60,7 @@ class DepartmentController {
             const errors = await validate(createDepartment);
             if (errors.length > 0) {
                 console.log(JSON.stringify(errors));
-                throw new ValidateException(errors, "Vaildation error");
+                throw new ValidateException(errors);
 
             }
             const department = await this.departmentService.createDepartment(createDepartment)
@@ -82,7 +82,7 @@ class DepartmentController {
             const errors = await validate(updateDepartment);
             if (errors.length > 0) {
                 console.log(JSON.stringify(errors));
-                throw new ValidateException(errors,"Vaildation error");
+                throw new ValidateException(errors);
 
             }
             const department = await this.departmentService.upadateDepartment(departmentId, updateDepartment)

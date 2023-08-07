@@ -2,6 +2,7 @@ import { NextFunction } from "express";
 import { RequestWithUser } from "../../utils/requestWithUser";
 import HttpException from "../exception/http.exception";
 import { Role } from "../../utils/role.enum";
+import ForbiddenException from "../exception/forbidden.exception";
 
 const authorize = (role: Role[]) => {
     return async (
@@ -12,7 +13,7 @@ const authorize = (role: Role[]) => {
         try {
             const role = req.role;
             if (!(role.includes(req.role))) {
-                throw new HttpException(403, "You are not authorized ")
+                throw new ForbiddenException()
             }
             next();
         } catch (error) {

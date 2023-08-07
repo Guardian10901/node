@@ -11,6 +11,7 @@ import employeeService from "../service/employee.service";
 import logger from "../../utils/log.winston";
 import { Employee } from "../entity/employee.entity";
 import { Timestamp } from "typeorm";
+import HttpException from "../exception/http.exception";
 class EmployeeController {
     public router: express.Router;
     constructor(private employeeService: EmployeeService) {
@@ -35,10 +36,14 @@ class EmployeeController {
         try {const reqStart=Date.now();
             const employeeId: number = Number(req.params.id);
             const employee = await this.employeeService.getEmployeeId(employeeId);
+            if(!employee){
+                throw new HttpException(404,"Not Found");
+            }
             logger.info(`Employee with id ${employeeId} fetched suceessfully `)
             res.status(200).send({data:employee,error:null,message:"OK",meta:{length:"1",took:Date.now()-reqStart,total:"1"}});
         }
         catch (error) {
+            
             logger.error('Employee with id ${employeeId} fetch failed')
             next(error);
 
@@ -53,11 +58,14 @@ class EmployeeController {
             if (errors.length > 0) {
                 console.log(JSON.stringify(errors));
                 logger.error('Validation Error')
-                throw new ValidateException(errors,"Vaildation error");
+                throw new ValidateException(errors);
 
             }
 
             const employee = await this.employeeService.createEmployee(createEmployee);
+            if(!employee){
+                throw new HttpException(404,"Not Found");
+            }
             logger.info("Employees created sucessfully  ")
             res.status(201).send({data:employee,error:null,message:"OK",meta:{length:"1",took:Date.now()-reqStart,total:"1"}});
         } catch (error) {
@@ -71,6 +79,9 @@ class EmployeeController {
             const employeeId: number = Number(req.params.id);
             const employee = await this.employeeService.deleteEmployee(employeeId);
             logger.info(`Employee id :${employeeId} deleted sucessfully`)
+            if(!employee){
+                throw new HttpException(404,"Not Found");
+            }
             res.status(204).send()
         } catch (error) {
             logger.error('Employee deletion failed')
@@ -88,10 +99,13 @@ class EmployeeController {
             if (errors.length > 0) {
                 console.log(JSON.stringify(errors));
                 logger.error('Validation Error')
-                throw new ValidateException(errors,"Vaildation error");
+                throw new ValidateException(errors);
 
             }
             const employee = await this.employeeService.updateEmployee(employeeId, updateEmployee)
+            if(!employee){
+                throw new HttpException(404,"Not Found");
+            }
             logger.info(`Employee id :${employeeId} updated sucessfully`)
             res.status(200).send({data:employee,error:null,message:"OK",meta:{length:"1",took:Date.now()-reqStart,total:"1"}});
         }
@@ -105,6 +119,9 @@ class EmployeeController {
         const { email , password } =req.body;
         try{
             const {token,employee} = await this.employeeService.loginEmployee(email,password);
+            if(!employee){
+                throw new HttpException(404,"Not Found");
+            }
 
             res.status(200).send({data:{token:token,employeeDetails:employee},error:null,message:"OK",meta:{length:"1",took:Date.now()-reqStart,total:"1"}})
         }catch(error)
